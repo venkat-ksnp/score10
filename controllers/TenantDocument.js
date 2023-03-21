@@ -66,7 +66,8 @@ const list = async (req, res) => {
       let Docs = []
       for (let i = 0; i < record.length; i++) {
         is_verified = await ThisModel.findOne({document_type_id:record[i]._id,is_verified:true})
-        record[i]['is_verified'] = (is_verified)?true:false
+        record[i]['is_verified']  = (is_verified)?true:false
+        record[i]['verification'] = is_verified
         Docs.push(record[i])
       }
       let records = {noOfRecord:noOfRecord,results:record}
