@@ -21,6 +21,10 @@ const ModelSchema = new mongoose.Schema(
             unique :true,
             required:true,
         },
+        is_phone_verified:{
+            type: Boolean,
+            default:false,
+        },
         phone_verification:{
             type: Object,
             default:null

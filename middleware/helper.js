@@ -111,7 +111,7 @@ function USER_ID(req) {
 }
 
 const ErrorValidation = async (req,res,err,errtype) => {
-    console.log(errtype)
+    // console.log(errtype)
     if(errtype=='cache'){
         let msg = (err.message)?err.message:'Try again'
         return res.status(400).send({message:msg,error:err});

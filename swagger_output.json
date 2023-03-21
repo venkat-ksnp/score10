@@ -342,6 +342,52 @@
         }
       }
     },
+    "/Author/phone/verification/generateOtp/{phonenumber}": {
+      "get": {
+        "tags": [
+          "Author"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "phonenumber",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/Author/phone/verification/submitOtp/{otp}/{referenceId}/{phonenumber}": {
+      "get": {
+        "tags": [
+          "Author"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "otp",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "referenceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "phonenumber",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
     "/Author/list": {
       "get": {
         "tags": [
@@ -1079,16 +1125,6 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "type": "number"
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "type": "number"
           }
         ],
         "responses": {
@@ -1098,7 +1134,7 @@
         }
       }
     },
-    "/TenantDocument/view/{id}": {
+    "/TenantDocument/verify/{id}/{number}": {
       "get": {
         "tags": [
           "TenantDocument"
@@ -1112,27 +1148,7 @@
             "type": "string"
           },
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
-    "/TenantDocument/update/{id}": {
-      "patch": {
-        "tags": [
-          "TenantDocument"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
+            "name": "number",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1143,27 +1159,18 @@
             "type": "string"
           },
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "properties": {
-                "tenant_id": {
-                  "type": "string",
-                  "description": "_id off Author (Role tenant)"
-                },
-                "document_type_id": {
-                  "type": "string",
-                  "description": "_id off DocumentType"
-                },
-                "number": {
-                  "type": "number"
-                },
-                "is_verified": {
-                  "type": "boolean",
-                  "default": false
-                }
-              }
-            }
+            "name": "type",
+            "in": "query",
+            "enum": [
+              "adhar",
+              "pan",
+              "driving_licence",
+              "voter_id",
+              "passport",
+              "electricity",
+              "court_case"
+            ],
+            "type": "string"
           }
         ],
         "responses": {

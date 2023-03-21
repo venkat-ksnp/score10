@@ -64,5 +64,5 @@ app.use("/api", apirouter.api);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 app.use("/api", apirouter.api);
 app.listen(port, () => {
-    console.log(`AdminJS started on http://localhost:${port}`)
+    console.log(`AdminJS started on http://localhost:${port}/swagger`)
 })

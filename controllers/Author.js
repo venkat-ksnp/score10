@@ -3,7 +3,10 @@ const jwt               =      require('jsonwebtoken');
 const randtoken         =      require('rand-token');
 const bcrypt            =      require("bcrypt");
 const ThisModel         =      mongoos.model('Author');
+const LanlordTenantModel=      mongoos.model('LanlordTenant');
 const Helper            =      require("../middleware/helper");
+const axios             =      require("axios");
+const Services          =      require("../services");
 
 const create = async (req, res) => {
   // #swagger.tags = ['Author']
@@ -55,20 +58,71 @@ const create = async (req, res) => {
     CreateModel[key]=value
   }
   if(!CreateModel.password){
-    CreateModel['password'] = 1234
-    // CreateModel['password'] = await Helper.Otp()
+    CreateModel['password'] = await Helper.Otp()
   }
   // const opts = { runValidators: false , upsert: true };
   try{
     return await CreateModel.save( async (err,doc) => {
         if(!err){
-          let text = 'Email: '+CreateModel.email+' and password: '+CreateModel.password+' are your login credentials.'
-          let subject = "Account created successfully"
-          let transporter = await Helper.SentMail(CreateModel.email,subject,text)
+          // let text = 'Email: '+CreateModel.email+' and password: '+CreateModel.password+' are your login credentials.'
+          // let subject = "Account created successfully"
+          // let transporter = await Helper.SentMail(CreateModel.email,subject,text)
+          if(CreateModel.role == 'Tenant'){
+            let CreateLanlordTenantModel = LanlordTenantModel()
+            CreateLanlordTenantModel['tenant_id'] = doc._id
+            CreateLanlordTenantModel['lanlord_id'] = req.user._id
+            CreateLanlordTenantModel.save()
+          }
           await Helper.SuccessValidation(req,res,doc,'Added successfully')
         }else{
           await Helper.ErrorValidation(req,res,err,null)
         }
+    })
+  } catch (err) {
+    return await Helper.ErrorValidation(req,res,err,'cache')
+  }
+}
+
+const generateotp = async (req, res) => {
+  // #swagger.tags = ['Author']
+  try{
+    return await axios.post('https://signzy.tech/api/v2/patrons/login', { "username": "score10_prod", "password": "2J5VGkGHS12AAWPXxngl" }).then(async (signresp) => {
+      if(signresp.status == 200) {
+        // console.log(signresp.data)
+        let respData = await Services.phoneNumberGenerateOtp(req.params.phonenumber,signresp.data.userId,signresp.data.id)
+        if(respData.status == 200) {
+          return await Helper.SuccessValidation(req,res,respData)
+        }else{
+          return await Helper.ErrorValidation(req,res,respData.final_response,'cache')
+        }
+      }else{
+        return await Helper.ErrorValidation(req,res,res.data,'cache')
+      }
+    }).catch(async (err) => {
+      return await Helper.ErrorValidation(req,res,err,'cache')
+    })
+  } catch (err) {
+    return await Helper.ErrorValidation(req,res,err,'cache')
+  }
+}
+
+const submitOtp = async (req, res) => {
+  // #swagger.tags = ['Author']
+  try{
+    return await axios.post('https://signzy.tech/api/v2/patrons/login', { "username": "score10_prod", "password": "2J5VGkGHS12AAWPXxngl" }).then(async (res) => {
+      if(res.status == 200){
+        let respData = await Services.phoneNumberVerification(req.params.otp,req.params.phonenumber,req.params.referenceId,res.data.userId,res.data.id)
+        if(respData.status == 200){
+          await ThisModel.updateOne({phonenumber:req.params.phonenumber},{$set:{is_phone_verified:true,phone_verification:JSON.parse(respData.final_response)}})
+          return await Helper.SuccessValidation(req,res,respData.final_response)
+        }else{
+          return await Helper.ErrorValidation(req,res,respData.final_response,'cache')
+        }
+      }else{
+        return await Helper.ErrorValidation(req,res,res.data,'cache')
+      }
+    }).catch(async (err) => {
+      return await Helper.ErrorValidation(req,res,err,'cache')
     })
   } catch (err) {
     return await Helper.ErrorValidation(req,res,err,'cache')
@@ -428,4 +482,4 @@ const forgotpassword = async (req, res) => {
   }
 }
 
-module.exports = {create,list, view, update, remove, bulkremove, login, resetpassword, forgotpassword, refreshToken, changePassword, loginwithotp};
+module.exports = {create,list, view, update, remove, bulkremove, login, resetpassword, forgotpassword, refreshToken, changePassword, loginwithotp, submitOtp, generateotp};
