@@ -1070,50 +1070,6 @@
         }
       }
     },
-    "/TenantDocument/create": {
-      "post": {
-        "tags": [
-          "TenantDocument"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "required": [
-                "tenant_id",
-                "document_type_id",
-                "number"
-              ],
-              "properties": {
-                "tenant_id": {
-                  "type": "string",
-                  "description": "_id off Author (Role tenant)"
-                },
-                "document_type_id": {
-                  "type": "string",
-                  "description": "_id off DocumentType"
-                },
-                "number": {
-                  "type": "number"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
     "/TenantDocument/list": {
       "get": {
         "tags": [

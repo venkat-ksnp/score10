@@ -33,7 +33,7 @@ router.delete("/Property/furnishes/delete/:id",authorization,PropertyController.
 // router.delete("/Property/bulkdelete/:ids",authorization,LandlordDocumentController.bulkremove)
 
 const TenantDocumentDocumentController          =  require('../controllers/TenantDocument.js')
-router.post("/TenantDocument/create",authorization, TenantDocumentDocumentController.create)
+// router.post("/TenantDocument/create",authorization, TenantDocumentDocumentController.create)
 router.get("/TenantDocument/list",authorization,TenantDocumentDocumentController.list)
 router.get("/TenantDocument/verify/:id/:number",authorization,TenantDocumentDocumentController.Verify)
 // router.get("/TenantDocument/view/:id",authorization,TenantDocumentDocumentController.view)
