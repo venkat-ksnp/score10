@@ -88,24 +88,28 @@ const generateotp = async (req, res) => {
   try{
     query = {}
     query['phonenumber'] = {$eq:req.params.phonenumber}
-    let noOfRecord = await ThisModel.find(query).countDocuments();
-    if(noOfRecord>0){
-      let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
-      return await axios.post(`https://${Signzy_Api_Url}/api/v2/patrons/login`, { "username": "score10_prod", "password": "2J5VGkGHS12AAWPXxngl" }).then(async (signresp) => {
-      // console.log(signresp)
-      if(signresp.status == 200) {
-          let respData = await Services.phoneNumberGenerateOtp(req.params.phonenumber,signresp.data.userId,signresp.data.id)
-          if(respData.status == 200) {
-            return await Helper.SuccessValidation(req,res,respData.final_response.result)
+    let noOfRecord = await ThisModel.findOne(query);
+    if(noOfRecord){
+      if(noOfRecord.is_phone_verified){
+        return await Helper.ErrorValidation(req,res,"Already verified",'cache')
+      }else{
+        let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
+        return await axios.post(`https://${Signzy_Api_Url}/api/v2/patrons/login`, { "username": "score10_prod", "password": "2J5VGkGHS12AAWPXxngl" }).then(async (signresp) => {
+        // console.log(signresp)
+        if(signresp.status == 200) {
+            let respData = await Services.phoneNumberGenerateOtp(req.params.phonenumber,signresp.data.userId,signresp.data.id)
+            if(respData.status == 200) {
+              return await Helper.SuccessValidation(req,res,respData.final_response.result)
+            }else{
+              return await Helper.ErrorValidation(req,res,respData.final_response,'cache')
+            }
           }else{
-            return await Helper.ErrorValidation(req,res,respData.final_response,'cache')
+            return await Helper.ErrorValidation(req,res,res.data,'cache')
           }
-        }else{
-          return await Helper.ErrorValidation(req,res,res.data,'cache')
-        }
-      }).catch(async (err) => {
-        return await Helper.ErrorValidation(req,res,err,'cache')
-      })
+        }).catch(async (err) => {
+          return await Helper.ErrorValidation(req,res,err,'cache')
+        })
+      }
     }else{
       return await Helper.ErrorValidation(req,res,"Invalid Mobilenumber",'cache')
     }
