@@ -86,21 +86,29 @@ const create = async (req, res) => {
 const generateotp = async (req, res) => {
   // #swagger.tags = ['Author']
   try{
-    return await axios.post('https://signzy.tech/api/v2/patrons/login', { "username": "score10_prod", "password": "2J5VGkGHS12AAWPXxngl" }).then(async (signresp) => {
+    query = {}
+    query['phonenumber'] = {$eq:req.params.phonenumber}
+    let noOfRecord = await ThisModel.find(query).countDocuments();
+    if(noOfRecord>0){
+      let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
+      return await axios.post(`https://${Signzy_Api_Url}/api/v2/patrons/login`, { "username": "score10_prod", "password": "2J5VGkGHS12AAWPXxngl" }).then(async (signresp) => {
+      // console.log(signresp)
       if(signresp.status == 200) {
-        // console.log(signresp.data)
-        let respData = await Services.phoneNumberGenerateOtp(req.params.phonenumber,signresp.data.userId,signresp.data.id)
-        if(respData.status == 200) {
-          return await Helper.SuccessValidation(req,res,respData)
+          let respData = await Services.phoneNumberGenerateOtp(req.params.phonenumber,signresp.data.userId,signresp.data.id)
+          if(respData.status == 200) {
+            return await Helper.SuccessValidation(req,res,respData.final_response.result)
+          }else{
+            return await Helper.ErrorValidation(req,res,respData.final_response,'cache')
+          }
         }else{
-          return await Helper.ErrorValidation(req,res,respData.final_response,'cache')
+          return await Helper.ErrorValidation(req,res,res.data,'cache')
         }
-      }else{
-        return await Helper.ErrorValidation(req,res,res.data,'cache')
-      }
-    }).catch(async (err) => {
-      return await Helper.ErrorValidation(req,res,err,'cache')
-    })
+      }).catch(async (err) => {
+        return await Helper.ErrorValidation(req,res,err,'cache')
+      })
+    }else{
+      return await Helper.ErrorValidation(req,res,"Invalid Mobilenumber",'cache')
+    }
   } catch (err) {
     return await Helper.ErrorValidation(req,res,err,'cache')
   }
@@ -109,11 +117,12 @@ const generateotp = async (req, res) => {
 const submitOtp = async (req, res) => {
   // #swagger.tags = ['Author']
   try{
-    return await axios.post('https://signzy.tech/api/v2/patrons/login', { "username": "score10_prod", "password": "2J5VGkGHS12AAWPXxngl" }).then(async (res) => {
-      if(res.status == 200){
-        let respData = await Services.phoneNumberVerification(req.params.otp,req.params.phonenumber,req.params.referenceId,res.data.userId,res.data.id)
+    let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
+    return await axios.post(`https://${Signzy_Api_Url}/api/v2/patrons/login`, { "username": "score10_prod", "password": "2J5VGkGHS12AAWPXxngl" }).then(async (resp) => {
+      if(resp.status == 200){
+        let respData = await Services.phoneNumberVerification(req.params.otp,req.params.phonenumber,req.params.referenceId,resp.data.userId,resp.data.id)
         if(respData.status == 200){
-          await ThisModel.updateOne({phonenumber:req.params.phonenumber},{$set:{is_phone_verified:true,phone_verification:JSON.parse(respData.final_response)}})
+          await ThisModel.updateOne({phonenumber:req.params.phonenumber},{$set:{is_phone_verified:true,phone_verification:respData.final_response}})
           return await Helper.SuccessValidation(req,res,respData.final_response)
         }else{
           return await Helper.ErrorValidation(req,res,respData.final_response,'cache')

@@ -1,4 +1,5 @@
-const axios = require("axios");
+const axios           =   require("axios");
+const Helper          =   require("../middleware/helper");
 
 const panCardDetails = (id_number, userId, id) => {
   var data = JSON.stringify({
@@ -110,66 +111,6 @@ const drivingLicense = (id_number, userId, id) => {
     });
 }
 
-const phoneNumberGenerateOtp = async (mobileNumber,userId,id) => {
-  var options = {
-    method: 'post',
-    url: `https://signzy.tech/api/v2/patrons/${userId}/phones`,
-    headers: {
-      'Authorization': id,
-      'Content-Type': 'application/json',
-      'Accept-Language': 'en-US,en;q=0.8', 
-      'Accept': '*/*'
-    },
-    data: {
-      task: 'mobile',
-      essentials: {
-        task: 'generateOtp',
-        countryCode:'+91',
-        mobileNumber:mobileNumber
-      }
-    }
-  };
-  return axios(options).then(function (responses){
-    if(responses.status == 200) {
-      return { status: 200, final_response:responses.data };
-    }else{
-      return { status: 400, final_response:responses.data };
-    }
-  }).catch(function (error){
-    return { status: 400, final_response: error };
-  });
-}
-
-const phoneNumberVerification = (otp,mobileNumber,referenceId,userId,id) => {
-  var options = {
-    method: 'POST',
-    url: `https://signzy.tech/api/v2/patrons/${userId}/phones`,
-    headers: {
-      'Authorization': id,
-      'Content-Type': 'application/json',
-    },
-    data: {
-      task: 'mobile',
-      essentials: {
-        task: 'submitOtp',
-        countryCode: '+91',
-        mobileNumber:mobileNumber,
-        referenceId:referenceId,
-        otp:otp
-      }
-    }
-  };
-  return axios(options).then(function (responses){
-    if(responses.status == 200) {
-      return { status: 200, final_response:responses.data };
-    }else{
-      return { status: 400, final_response:responses.data };
-    }
-  }).catch(function (error){
-    return { status: 400, final_response: error };
-  });
-}
-
 const passportVerification = (id_number, userId, id, dob) => {
   var data = JSON.stringify({
     "type": "passport",
@@ -230,6 +171,73 @@ const passportVerification = (id_number, userId, id, dob) => {
     }).catch(function (error) {
       return { status: 400, final_response: error };
     });
+}
+
+const phoneNumberGenerateOtp = async (mobileNumber,userId,id) => {
+  let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
+  var data = JSON.stringify({
+    task: "mobile",
+    essentials: {
+      task:"generateOtp",
+      countryCode:"91",
+      mobileNumber:mobileNumber
+    }
+  });
+  var options = {
+    method: 'post',
+    url: `https://${Signzy_Api_Url}/api/v2/patrons/${userId}/phones`,
+    headers: {
+      'Accept': '*/*',
+      'Accept-Language': 'en-US,en;q=0.8',
+      'Authorization': id,
+      'content-type': 'application/json'
+    },
+    data: data
+  };
+  return axios(options).then(function (responses){
+    if(responses.status == 200) {
+      return { status: 200, final_response:responses.data };
+    }else{
+      return { status: 400, final_response:responses.data };
+    }
+  }).catch(function (error){
+    return { status: 400, final_response: error };
+  });
+
+}
+
+const phoneNumberVerification = async (otp,mobileNumber,referenceId,userId,id) => {
+  let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
+  var data = JSON.stringify({
+    task: "mobile",
+    essentials: {
+      task:"submitOtp",
+      countryCode:"91",
+      mobileNumber:mobileNumber,
+      referenceId:referenceId,
+      otp:otp
+    }
+  });
+  var options = {
+    method: 'post',
+    url: `https://${Signzy_Api_Url}/api/v2/patrons/${userId}/phones`,
+    headers: {
+      'Accept': '*/*',
+      'Accept-Language': 'en-US,en;q=0.8',
+      'Authorization': id,
+      'content-type': 'application/json'
+    },
+    data: data
+  };
+  return axios(options).then(function (responses){
+    if(responses.status == 200) {
+      return { status: 200, final_response:responses.data };
+    }else{
+      return { status: 400, final_response:responses.data };
+    }
+  }).catch(function (error){
+    return { status: 400, final_response: error };
+  });
 }
 
 module.exports = {drivingLicense,panCardDetails,passportVerification,voterIdDetails,phoneNumberGenerateOtp,phoneNumberVerification}

@@ -229,6 +229,13 @@ const InbetweenDates = async (startDate, stopDate)=> {
     return dateArray;
 }
 
+const Signzy_Api_Url = async ()=> {
+    let signzy = null
+    signzy = "preproduction.signzy.tech"
+    signzy = "signzy.tech"
+    return signzy
+}
+
 const helper = {};
 
 helper.SuccessValidation    =   SuccessValidation
@@ -245,6 +252,7 @@ helper.InbetweenDates       =   InbetweenDates
 helper.BookingId            =   BookingId
 helper.TransactionId        =   TransactionId
 helper.GetUuid              =   GetUuid
-helper.SentMail             =   SentMail
+helper.SentMail             =   SentMail 
+helper.Signzy_Api_Url       =   Signzy_Api_Url
 
 module.exports = helper;
