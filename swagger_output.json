@@ -1117,6 +1117,7 @@
           {
             "name": "type",
             "in": "query",
+            "required": true,
             "enum": [
               "adhar",
               "pan",
@@ -1126,6 +1127,36 @@
               "electricity",
               "court_case"
             ],
+            "type": "string"
+          },
+          {
+            "name": "dob",
+            "in": "query",
+            "description": "Required only for driving_licence,passport(dd/mm/yyyy)",
+            "type": "string"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "description": "Required only for passport",
+            "type": "string"
+          },
+          {
+            "name": "electricityProvider",
+            "in": "query",
+            "description": "This field is Mandatory for Electricity",
+            "type": "string"
+          },
+          {
+            "name": "installationNumber",
+            "in": "query",
+            "description": "This field is Mandatory for West Bengal (WBSEDCL) Electricity",
+            "type": "string"
+          },
+          {
+            "name": "MobileNumber",
+            "in": "query",
+            "description": "This field is Mandatory for Kerala (KSEB) Electricity",
             "type": "string"
           }
         ],
@@ -1688,6 +1719,343 @@
       "delete": {
         "tags": [
           "BankDetails"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/Relation/create": {
+      "post": {
+        "tags": [
+          "Relation"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/Relation/list": {
+      "get": {
+        "tags": [
+          "Relation"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "number"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/Relation/view/{id}": {
+      "get": {
+        "tags": [
+          "Relation"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/Relation/update/{id}": {
+      "patch": {
+        "tags": [
+          "Relation"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/Relation/delete/{id}": {
+      "delete": {
+        "tags": [
+          "Relation"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/CoTenant/create": {
+      "post": {
+        "tags": [
+          "CoTenant"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "required": [
+                "tenant_id",
+                "name",
+                "age",
+                "relation"
+              ],
+              "properties": {
+                "tenant_id": {
+                  "type": "string",
+                  "description": "Take Author _id with role Tenant "
+                },
+                "name": {
+                  "type": "string"
+                },
+                "age": {
+                  "type": "number"
+                },
+                "relation": {
+                  "type": "string",
+                  "description": "Take Relation off _id "
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/CoTenant/list": {
+      "get": {
+        "tags": [
+          "CoTenant"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "tenant_id",
+            "in": "query",
+            "type": "string",
+            "description": "Take Author _id with role Tenant "
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/CoTenant/view/{id}": {
+      "get": {
+        "tags": [
+          "CoTenant"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/CoTenant/update/{id}": {
+      "patch": {
+        "tags": [
+          "CoTenant"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "tenant_id": {
+                  "type": "string",
+                  "description": "Take Author _id with role Tenant "
+                },
+                "name": {
+                  "type": "string"
+                },
+                "age": {
+                  "type": "number"
+                },
+                "relation": {
+                  "type": "string",
+                  "description": "Take Relation off _id "
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/CoTenant/delete/{id}": {
+      "delete": {
+        "tags": [
+          "CoTenant"
         ],
         "description": "",
         "parameters": [

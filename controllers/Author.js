@@ -7,6 +7,8 @@ const LanlordTenantModel=      mongoos.model('LanlordTenant');
 const Helper            =      require("../middleware/helper");
 const axios             =      require("axios");
 const Services          =      require("../services");
+let request             =      require('request');
+        
 
 const create = async (req, res) => {
   // #swagger.tags = ['Author']
@@ -93,8 +95,9 @@ const generateotp = async (req, res) => {
       if(noOfRecord.is_phone_verified){
         return await Helper.ErrorValidation(req,res,"Already verified",'cache')
       }else{
-        let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
-        return await axios.post(`https://${Signzy_Api_Url}/api/v2/patrons/login`, { "username": "score10_prod", "password": "2J5VGkGHS12AAWPXxngl" }).then(async (signresp) => {
+        let Signzy_Api_Url        = await Helper.Signzy_Api_Url()
+        let Signzy_Api_Uname_Pwd  = await Helper.Signzy_Api_Uname_Pwd()
+        return await axios.post(`https://${Signzy_Api_Url}/api/v2/patrons/login`,{"username":""+Signzy_Api_Uname_Pwd.username+"","password":""+Signzy_Api_Uname_Pwd.password+""}).then(async (signresp) => {
         // console.log(signresp)
         if(signresp.status == 200) {
             let respData = await Services.phoneNumberGenerateOtp(req.params.phonenumber,signresp.data.userId,signresp.data.id)
@@ -320,11 +323,18 @@ const login = async (req, res) => {
         }
       }else{
         let otp = await Helper.Otp()
+        let Sms_Otp_Details = await Helper.Sms_Otp_Details()
+        let msg = `Dear User, Your OTP to login to SCORE10 App is ${otp}. Valid for 30 Mins Regards Beatroot Team`
+        var options = {
+          'method': 'GET',
+          'url': "https://smslogin.co/v3/api.php?username="+Sms_Otp_Details.username+"&apikey="+Sms_Otp_Details.apikey+"&senderid="+Sms_Otp_Details.senderid+"&mobile="+req.body.phonenumber+"&message="+msg,
+        };
+        await request(options)
         await ThisModel.updateOne({_id:records.id},{ $set:{otp:otp}})
         await Helper.SuccessValidation(req,res,records,"Please login with otp")
       }
     }else{
-      return await Helper.ErrorValidation(req,res,{message:"Invalid email"},'cache')
+      return await Helper.ErrorValidation(req,res,{message:"Invalid credentials"},'cache')
     }
   } catch (err) {
     return await Helper.ErrorValidation(req,res,err,'cache')

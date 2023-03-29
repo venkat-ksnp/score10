@@ -62,6 +62,11 @@ const ModelSchema = new mongoose.Schema(
             type: Number,
             default:null
         },
+        api:{
+            type: String,
+            enum: ["signzy"],
+            default:"signzy"
+        }
     },
     {
         timestamps : true,

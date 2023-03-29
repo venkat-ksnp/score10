@@ -64,8 +64,14 @@ const list = async (req, res) => {
       const noOfRecord = await DocumentTypeModel.find(query).countDocuments();
       const record     = await DocumentTypeModel.find(query).lean().sort({ createdAt: -1 })
       let Docs = []
-      for (let i = 0; i < record.length; i++) {
-        is_verified = await ThisModel.findOne({tenant_id:req.user._id,document_type_id:record[i]._id,is_verified:true})
+      let CurrentDate = await Helper.CurrentDate()
+      for(let i = 0; i < record.length; i++){
+        let srh_query = {}
+        srh_query['document_type_id'] = {$eq:record[i]._id}
+        srh_query['tenant_id'] = {$eq:req.user._id}
+        srh_query['is_verified'] = {$eq:true}
+        srh_query['expairy_date'] = {$lte:CurrentDate}
+        is_verified = await ThisModel.findOne(srh_query)
         record[i]['is_verified']  = (is_verified)?true:false
         record[i]['verification'] = is_verified
         Docs.push(record[i])
@@ -77,39 +83,78 @@ const list = async (req, res) => {
   }
 }
 
+const view = async (req, res) => {
+  // #swagger.tags = ['TenantDocument']
+  try{
+    let records = await DocumentTypeModel.findOne({_id:req.params.id})
+    if(records){
+      let CurrentDate = await Helper.CurrentDate()
+      let srh_query = {}
+      srh_query['document_type_id'] = {$eq:records._id}
+      srh_query['tenant_id'] = {$eq:req.user._id}
+      srh_query['is_verified'] = {$eq:true}
+      srh_query['expairy_date'] = {$lte:CurrentDate}
+      is_verified = await ThisModel.findOne(srh_query)
+      records['is_verified']  = (is_verified)?true:false
+      records['verification'] = is_verified
+    }
+    return await Helper.SuccessValidation(req,res,records)
+  } catch (err) {
+    return await Helper.ErrorValidation(req,res,err,'cache')
+  }
+}
+
 const Verify = async (req, resp) => {
   //  #swagger.tags = ['TenantDocument']
-  //  #swagger.parameters['type'] = {in: 'query',enum: ["adhar", "pan", "driving_licence","voter_id","passport","electricity","court_case"]}
+  //  #swagger.parameters['type'] = {in: 'query',required:true,enum: ["adhar", "pan", "driving_licence","voter_id","passport","electricity","court_case"]}
+  //  #swagger.parameters['dob'] = {in: 'query',description:"Required only for driving_licence,passport(dd/mm/yyyy)"}
+  //  #swagger.parameters['state'] = {in: 'query',description:"Required only for passport"}
+  //  #swagger.parameters['electricityProvider'] = {in: 'query',description:"This field is Mandatory for Electricity"}
+  //  #swagger.parameters['installationNumber'] = {in: 'query',description:"This field is Mandatory for West Bengal (WBSEDCL) Electricity"}
+  //  #swagger.parameters['MobileNumber'] = {in: 'query',description:"This field is Mandatory for Kerala (KSEB) Electricity"}
+
   try{
+      let CurrentDate = await Helper.CurrentDate()
       let id_number = req.params.number
       let id_name   = req.query.type
-      let noOfRecord = await ThisModel.findOne({document_type_id:req.params.id,tenant_id:req.user._id})
+      let DocTypeId = await DocumentTypeModel.findOne({type:id_name})
+      let srh_query = {}
+      srh_query['document_type_id'] = {$eq:DocTypeId._id}
+      srh_query['tenant_id'] = {$eq:req.user._id}
+      srh_query['number'] = {$eq:id_number}
+      srh_query['expairy_date'] = {$lte:CurrentDate}
+      let noOfRecord  = await ThisModel.findOne(srh_query)
       let AlreadyVerified = 0
       if(!noOfRecord){
-        noOfRecord = ThisModel.create({document_type_id:req.params.id,tenant_id:req.user._id,number:id_number})
+        noOfRecord    = await ThisModel.create({document_type_id:DocTypeId._id,tenant_id:req.user._id,number:id_number})
       }else{
         if(noOfRecord.is_verified ==true){
           AlreadyVerified = 1
         }
       }
       if(AlreadyVerified == 0){
-          return await axios.post('https://signzy.tech/api/v2/patrons/login', { "username": "score10_prod", "password": "2J5VGkGHS12AAWPXxngl" }).then(async (res) => {
+          let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
+          let Signzy_Api_Uname_Pwd  = await Helper.Signzy_Api_Uname_Pwd()
+          return await axios.post(`https://${Signzy_Api_Url}/api/v2/patrons/login`,{"username":""+Signzy_Api_Uname_Pwd.username+"","password":""+Signzy_Api_Uname_Pwd.password+""}).then(async (res) => {
           if(res.status == 200) {
               let respData = null
               if (id_name == "pan") {
                 respData = await Services.panCardDetails(id_number, res.data.userId, res.data.id)
+              }else if (id_name == "voter_id") {
+                respData = await Services.voterIdDetails(id_number,req.query.state, res.data.userId, res.data.id)
+              }else if (id_name == "driving_licence") {
+                respData = await Services.drivingLicense(id_number,req.query.dob,res.data.userId, res.data.id)
+              }else if (id_name == "passport") {
+                respData = await Services.passportVerification(id_number,req.query.dob,res.data.userId, res.data.id)
+              }else if (id_name == "electricity") {
+                respData = await Services.electricityVerification(id_number,req.query.electricityProvider,res.data.userId, res.data.id)
+              }else{
+                respData = await Services.adharCardDetails(id_number, res.data.userId, res.data.id)
               }
-              if (id_name == "voter_id") {
-                respData = await Services.voterIdDetails(id_number, res.data.userId, res.data.id)
-              }
-              if (id_name == "driving_licence") {
-                respData = await Services.drivingLicense(id_number, res.data.userId, res.data.id)
-              }
-              if (id_name == "passport") {
-                respData = await Services.passportVerification(id_number, res.data.userId, res.data.id, dob)
-              }
+              // console.log(respData)
               if(respData.status == 200){
-                await ThisModel.updateOne({_id:noOfRecord._id},{ $set:{is_verified:true,verification_response:respData.final_response}})
+                let ExpairyDate = await Helper.ExpairyDate(CurrentDate)
+                await ThisModel.updateOne({_id:noOfRecord._id},{$set:{is_verified:true,expairy_date:ExpairyDate,verification_response:respData.final_response}})
                 return await Helper.SuccessValidation(req,resp,respData.final_response)
               }else{
                 await ThisModel.updateOne({_id:noOfRecord._id},{ $set:{verification_response:respData.final_response}})
@@ -127,16 +172,6 @@ const Verify = async (req, resp) => {
       }
   } catch (err) {
     return await Helper.ErrorValidation(req,resp,err,'cache')
-  }
-}
-
-const view = async (req, res) => {
-  // #swagger.tags = ['TenantDocument']
-  try{
-    let records = await ThisModel.findOne({_id:req.params.id})
-    return await Helper.SuccessValidation(req,res,records)
-  } catch (err) {
-    return await Helper.ErrorValidation(req,res,err,'cache')
   }
 }
 

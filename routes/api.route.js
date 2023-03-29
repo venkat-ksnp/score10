@@ -65,6 +65,22 @@ router.patch("/BankDetails/update/:id",authorization,BankDetailsController.updat
 router.delete("/BankDetails/delete/:id",authorization,BankDetailsController.remove)
 // router.delete("/BankDetails/bulkdelete/:ids",authorization,BankDetailsController.bulkremove)
 
+const RelationController          =  require('../controllers/Relation.js')
+router.post("/Relation/create",authorization, RelationController.create)
+router.get("/Relation/list",authorization,RelationController.list)
+router.get("/Relation/view/:id",authorization,RelationController.view)
+router.patch("/Relation/update/:id",authorization,RelationController.update)
+router.delete("/Relation/delete/:id",authorization,RelationController.remove)
+// router.delete("/Relation/bulkdelete/:ids",authorization,RelationController.bulkremove)
+
+const CoTenantController          =  require('../controllers/CoTenant.js')
+router.post("/CoTenant/create",authorization, CoTenantController.create)
+router.get("/CoTenant/list",authorization,CoTenantController.list)
+router.get("/CoTenant/view/:id",authorization,CoTenantController.view)
+router.patch("/CoTenant/update/:id",authorization,CoTenantController.update)
+router.delete("/CoTenant/delete/:id",authorization,CoTenantController.remove)
+// router.delete("/CoTenant/bulkdelete/:ids",authorization,CoTenantController.bulkremove)
+
 const AmenityController          =  require('../controllers/Amenity.js')
 // router.post("/Amenity/create", AmenityController.create)
 router.get("/Amenity/list",AmenityController.list)

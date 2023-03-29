@@ -143,6 +143,10 @@ const CurrentDate = () => {
     return new Date();
 }
 
+const ExpairyDate = (CurrentDate) => {
+    return new Date(CurrentDate.setMonth(CurrentDate.getMonth() + 6))
+}
+
 const DT_Y_M_D = (now) => {
     var now = new Date(now);
     let date = require('date-and-time')
@@ -231,14 +235,43 @@ const InbetweenDates = async (startDate, stopDate)=> {
 
 const Signzy_Api_Url = async ()=> {
     let signzy = null
-    signzy = "preproduction.signzy.tech"
+    // For Live
     signzy = "signzy.tech"
+    // For Staging
+    // signzy = "preproduction.signzy.tech"
     return signzy
 }
 
-const helper = {};
+const Signzy_Api_Uname_Pwd = async ()=> {
+    let username = null
+    let password = null
+    // For Live
+    username    =   'score10_prod'
+    password    =   '2J5VGkGHS12AAWPXxngl'
+    // For Staging
+    // username    =   'test'
+    // password    =   'test'
+    return {
+        username : username,
+        password : password
+    }
+}
 
-helper.SuccessValidation    =   SuccessValidation
+const Sms_Otp_Details = async ()=> {
+    let username = 'lakshmi.veeru11@gmail.com'
+    let apikey = 'a920a4516b3f83894e63c30e1c6ada22920fc80a2c6ffb9c568e905f1136f754'
+    let senderid = 'SCORTN'
+    return {
+        username    : username,
+        apikey      : apikey,
+        senderid    : senderid
+    }
+}
+
+const helper = {};
+helper.SuccessValidation    =   SuccessValidation 
+helper.Sms_Otp_Details      =   Sms_Otp_Details
+helper.ExpairyDate          =   ExpairyDate
 helper.ErrorValidation      =   ErrorValidation
 helper.USER_ID              =   USER_ID
 helper.RoundVal             =   RoundVal
@@ -254,5 +287,6 @@ helper.TransactionId        =   TransactionId
 helper.GetUuid              =   GetUuid
 helper.SentMail             =   SentMail 
 helper.Signzy_Api_Url       =   Signzy_Api_Url
+helper.Signzy_Api_Uname_Pwd =   Signzy_Api_Uname_Pwd
 
 module.exports = helper;

@@ -1,7 +1,40 @@
 const axios           =   require("axios");
 const Helper          =   require("../middleware/helper");
+const request         =   require('request');
 
-const panCardDetails = (id_number, userId, id) => {
+const adharCardDetails = async (id_number, userId, id) => {
+  let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
+  var data = JSON.stringify({"task":"getEadhaar", essentials: {"requestId":id_number}});
+  var config = {
+    method: 'post',
+    url: `https://${Signzy_Api_Url}/api/v2/patrons/${userId}/digilockers`,
+    headers: {
+      'Accept': '*/*',
+      'Accept-Language': 'en-US,en;q=0.8',
+      'Authorization': id,
+      'content-type': 'application/json'
+    },
+    data: data
+  };
+  return axios(config).then(function (response) {
+      if (response.status === 200) {
+        return { status: 200, final_response: response.data };
+      }else{
+        return { status: 400, final_response: responses.data };
+      }
+  }).catch(function (error) {
+    try{
+      var error = error.response.data.error
+    } catch (err){
+      var error = error
+    }
+    return { status: 400, final_response:error};
+  });
+}
+
+
+const panCardDetails = async (id_number, userId, id) => {
+  let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
   var data = JSON.stringify({
     "task": [
       "1"
@@ -12,7 +45,7 @@ const panCardDetails = (id_number, userId, id) => {
   });
   var config = {
     method: 'post',
-    url: `https://signzy.tech/api/v2/patrons/${userId}/panv2`,
+    url: `https://${Signzy_Api_Url}/api/v2/patrons/${userId}/panv2`,
     headers: {
       'Accept': '*/*',
       'Accept-Language': 'en-US,en;q=0.8',
@@ -21,42 +54,58 @@ const panCardDetails = (id_number, userId, id) => {
     },
     data: data
   };
-  return axios(config).then(function (response) {
+  return await axios(config).then(function (response) {
       if (response.status === 200) {
         return { status: 200, final_response: response.data };
       }else{
         return { status: 400, final_response: responses.data };
       }
   }).catch(function (error) {
-    return { status: 400, final_response: error };
+    try{
+      var error = error.response.data.error
+    } catch (err){
+      var error = error
+    }
+    return { status: 400, final_response:error};
   });
 }
 
-const voterIdDetails = (id_number, userId, id) => {
-  var data = JSON.stringify({ "task": "epicNumberSearch", "essentials": { "epicNumber": id_number } });
-  var config = {
+const voterIdDetails = async (id_number,state, userId, id) => {
+  let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
+  let data = JSON.stringify({
+    "task": "epicNumberSearch", 
+    "essentials": {
+      "epicNumber": id_number,
+      "state":state
+    }
+  });
+  let config = {
     method: 'post',
-    url: `https://signzy.tech/api/v2/patrons/${userId}/voterIdV2`,
+    url: `https://${Signzy_Api_Url}/api/v2/patrons/${userId}/voterIdV2`,
     headers: {
-      'Accept': '*/*',
-      'Accept-Language': 'en-US,en;q=0.8',
       'Authorization': id,
-      'content-type': 'application/json'
+      'Content-Type': 'application/json',
     },
     data: data
   };
-  return axios(config).then(function (response) {
+  return await axios(config).then(async function (response){
       if (response.status === 200) {
         return { status: 200, final_response: response.data };
       }else{
         return { status: 400, final_response: responses.data };
       }
-  }).catch(function (error) {
-    return { status: 400, final_response: error };
+  }).catch(async function (error) {
+    try{
+      var error = await error.response.data.error
+    } catch (err){
+      var error = await error
+    }
+    return { status: 400, final_response:error};
   });
 }
 
-const drivingLicense = (id_number, userId, id) => {
+const drivingLicense = async (id_number,dob,userId,id) => {
+  let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
   var data = JSON.stringify({
     "type": "drivingLicence",
     "email": "ankur.rand@signzy.com",
@@ -65,34 +114,34 @@ const drivingLicense = (id_number, userId, id) => {
   });
   var config = {
     method: 'post',
-    url: `https://signzy.tech/api/v2/patrons/${userId}/identities`,
+    url: `https://${Signzy_Api_Url}/api/v2/patrons/${userId}/identities`,
     headers: {
       'Authorization': id,
       'Content-Type': 'application/json',
     },
     data: data
   };
-  return axios(config)
+  return await axios(config)
     .then(function (response) {
       if (response.status === 200) {
-        var data = { "service": "Identity", "itemId": response.data.id, "accessToken": response.data.accessToken, "task": "fetch", "essentials": { "dob": "", "number": id_number } };
+        var data = JSON.stringify({
+          "service": "Identity", 
+          "itemId": response.data.id, 
+          "accessToken": response.data.accessToken, 
+          "task": "fetch", 
+          "essentials": {
+            "number": id_number,
+            "dob":dob
+          } 
+        });
         var config = {
           method: 'post',
-          url: 'https://signzy.tech/api/v2/snoops',
+          url: `https://${Signzy_Api_Url}/api/v2/snoops`,
           headers: {
-            'Accept': 'application/json, text/plain, */*',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Connection': 'keep-alive',
-            'Content-Type': 'application/json;charset=UTF-8',
-            'Origin': 'https://sandbox.signzy.tech',
-            'Referer': 'https://sandbox.signzy.tech/',
-            'Sec-Fetch-Dest': 'empty',
-            'Sec-Fetch-Mode': 'cors',
-            'Sec-Fetch-Site': 'same-site',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
-            'sec-ch-ua': '"Google Chrome";v="107", "Chromium";v="107", "Not=A?Brand";v="24"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"macOS"'
+            'Accept-Language': 'en-US,en;q=0.8',
+            'content-type': 'application/json',
+            Accept: '*/*',
+            'Authorization': id
           },
           data: data
         };
@@ -107,11 +156,17 @@ const drivingLicense = (id_number, userId, id) => {
         });
       }
     }).catch(function (error) {
-      console.log(error);
+      try{
+        var error = error.response.data.error
+      } catch (err){
+        var error = error
+      }
+      return { status: 400, final_response:error};
     });
 }
 
-const passportVerification = (id_number, userId, id, dob) => {
+const passportVerification = async (id_number,dob, userId, id) => {
+  let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
   var data = JSON.stringify({
     "type": "passport",
     "email": "ankur.rand@signzy.com",
@@ -120,7 +175,7 @@ const passportVerification = (id_number, userId, id, dob) => {
   });
   var config = {
     method: 'post',
-    url: `https://signzy.tech/api/v2/patrons/${userId}/identities`,
+    url: `https://${Signzy_Api_Url}/api/v2/patrons/${userId}/identities`,
     headers: {
       'Authorization': id,
       'Content-Type': 'application/json',
@@ -128,49 +183,88 @@ const passportVerification = (id_number, userId, id, dob) => {
     data: data
   };
   return axios(config)
-    .then(function (response) {
+    .then(async function (response) {
       if (response.status === 200) {
         var data = {
-          "service": "Identity", "itemId": response.data.id, "accessToken": response.data.accessToken, "task": "fetch",
+          "service": "Identity", 
+          "itemId": response.data.id, 
+          "accessToken": response.data.accessToken, 
+          "task": "fetch",
           "essentials": {
-            dob: dob,
             fileNumber: id_number,
-            fuzzy: "true"
+            fuzzy: "true",
+            dob: dob,
           }
         };
         var config = {
           method: 'post',
-          url: 'https://signzy.tech/api/v2/snoops',
+          url: `https://${Signzy_Api_Url}/api/v2/snoops`,
           headers: {
-            'Accept': 'application/json, text/plain, */*',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Connection': 'keep-alive',
-            'Content-Type': 'application/json;charset=UTF-8',
-            'Origin': 'https://sandbox.signzy.tech',
-            'Referer': 'https://sandbox.signzy.tech/',
-            'Sec-Fetch-Dest': 'empty',
-            'Sec-Fetch-Mode': 'cors',
-            'Sec-Fetch-Site': 'same-site',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
-            'sec-ch-ua': '"Google Chrome";v="107", "Chromium";v="107", "Not=A?Brand";v="24"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"macOS"'
+            'Accept-Language': 'en-US,en;q=0.8',
+            'content-type': 'application/json',
+            Accept: '*/*',
+            'Authorization': id
           },
           data: data
         };
-        return axios(config).then(function (responses) {
+        return await axios(config).then(async function (responses) {
             if (responses.status == 200) {
               return { status: 200, final_response: responses.data };
             }else{
               return { status: 400, final_response: responses.data };
             }
         }).catch(function (error) {
+          try{
+            var error = error.response.data.error
+          } catch (err){
+            var error = error
+          }
           return { status: 400, final_response: error };
         });
       }
     }).catch(function (error) {
-      return { status: 400, final_response: error };
+      try{
+        var error = error.response.data.error
+      } catch (err){
+        var error = error
+      }
+      return { status: 400, final_response:error};
     });
+}
+
+const electricityVerification = async (id_number,electricityProvider, userId, id) => {
+  let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
+  var data = JSON.stringify({
+    essentials: {
+      consumerNo:id_number,
+      electricityProvider:electricityProvider,
+    }
+  });
+  var config = {
+    method: 'POST',
+    url:`https://${Signzy_Api_Url}/api/v2/patrons/${userId}/electricitybills`,
+    headers: {
+      'Accept-Language': 'en-US,en;q=0.8',
+      'content-type': 'application/json',
+      Accept: '*/*',
+      'Authorization': id
+    },
+    data: data
+  };
+  return axios(config).then(function (responses) {
+      if (responses.status == 200) {
+        return { status: 200, final_response: responses.data };
+      }else{
+        return { status: 400, final_response: responses.data };
+      }
+  }).catch(function (error) {
+    try{
+      var error = error.response.data.error
+    } catch (err){
+      var error = error
+    }
+    return { status: 400, final_response: error };
+  });
 }
 
 const phoneNumberGenerateOtp = async (mobileNumber,userId,id) => {
@@ -201,7 +295,12 @@ const phoneNumberGenerateOtp = async (mobileNumber,userId,id) => {
       return { status: 400, final_response:responses.data };
     }
   }).catch(function (error){
-    return { status: 400, final_response: error };
+    try{
+      var error = error.response.data.error
+    } catch (err){
+      var error = error
+    }
+    return { status: 400, final_response:error};
   });
 
 }
@@ -236,8 +335,13 @@ const phoneNumberVerification = async (otp,mobileNumber,referenceId,userId,id) =
       return { status: 400, final_response:responses.data };
     }
   }).catch(function (error){
-    return { status: 400, final_response: error };
+    try{
+      var error = error.response.data.error
+    } catch (err){
+      var error = error
+    }
+    return { status: 400, final_response:error};
   });
 }
 
-module.exports = {drivingLicense,panCardDetails,passportVerification,voterIdDetails,phoneNumberGenerateOtp,phoneNumberVerification}
+module.exports = {drivingLicense,panCardDetails,passportVerification,voterIdDetails,phoneNumberGenerateOtp,phoneNumberVerification,adharCardDetails,electricityVerification}

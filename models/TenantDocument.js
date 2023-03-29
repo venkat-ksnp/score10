@@ -25,6 +25,15 @@ const ModelSchema = new mongoose.Schema(
         verification_response:{
             type:Object,
             default:false
+        },
+        expairy_date:{
+            type:Date,
+            default:null
+        },
+        api:{
+            type: String,
+            enum: ["signzy"],
+            default:"signzy"
         }
     },
     {
