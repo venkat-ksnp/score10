@@ -74,21 +74,21 @@ const ModelSchema = new mongoose.Schema(
     }
 );
 
-ModelSchema.pre('updateOne', async function (next) {
-    console.log('Before update....');
-    let AlluserScOUNT = await mongoose.models.Author.countDocuments({email:this.getUpdate().$set.email,_id:{ $ne: this.getQuery()._id } })
-    if(AlluserScOUNT==0){
-        this.options.runValidators = true;
-        if(this.getUpdate().$set.password){
-            const salt = await bcrypt.genSaltSync(10);
-            const hash = bcrypt.hashSync(this.getUpdate().$set.password, salt);
-            // this.password = hash
-        }
-        next();
-    }else{
-        next("Email already existed");
-    }
-});
+// ModelSchema.pre('updateOne', async function (next) {
+//     console.log('Before update....');
+//     let AlluserScOUNT = await mongoose.models.Author.countDocuments({email:this.getUpdate().$set.email,_id:{ $ne: this.getQuery()._id } })
+//     if(AlluserScOUNT==0){
+//         this.options.runValidators = true;
+//         if(this.getUpdate().$set.password){
+//             const salt = await bcrypt.genSaltSync(10);
+//             const hash = bcrypt.hashSync(this.getUpdate().$set.password, salt);
+//             // this.password = hash
+//         }
+//         next();
+//     }else{
+//         next("Email already existed");
+//     }
+// });
 
 ModelSchema.pre('save',async function(next){
     try{
