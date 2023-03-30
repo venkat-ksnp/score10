@@ -32,6 +32,14 @@ router.delete("/Property/rooms/delete/:id",authorization,PropertyController.room
 router.delete("/Property/furnishes/delete/:id",authorization,PropertyController.furnishesremove)
 // router.delete("/Property/bulkdelete/:ids",authorization,LandlordDocumentController.bulkremove)
 
+const PropertyImageController          =  require('../controllers/PropertyImage.js')
+router.post("/PropertyImage/create",authorization, PropertyImageController.create)
+router.get("/PropertyImage/list",authorization,PropertyImageController.list)
+router.get("/PropertyImage/view/:id",authorization,PropertyImageController.view)
+router.patch("/PropertyImage/update/:id",authorization,PropertyImageController.update)
+router.delete("/PropertyImage/delete/:id",authorization,PropertyImageController.remove)
+// router.delete("/PropertyImage/bulkdelete/:ids",authorization,PropertyImageController.bulkremove)
+
 const TenantDocumentDocumentController          =  require('../controllers/TenantDocument.js')
 // router.post("/TenantDocument/create",authorization, TenantDocumentDocumentController.create)
 router.get("/TenantDocument/list",authorization,TenantDocumentDocumentController.list)

@@ -9,6 +9,10 @@ const ModelSchema = new mongoose.Schema(
             ref : "Author",
             required:true,
         },
+        icon:{
+            type: Object,
+            default:false
+        },
         title:{
             type: String,
             required:true,

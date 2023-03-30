@@ -1,33 +1,25 @@
 const mongoos           =      require("mongoose");
 const jwt               =      require('jsonwebtoken');
 const bcrypt            =      require("bcrypt");
-const ThisModel         =      mongoos.model('DocumentType');
+const ThisModel         =      mongoos.model('PropertyImage');
 const Helper            =      require("../middleware/helper");
 var nodemailer          =      require('nodemailer');
 
 const create = async (req, res) => {
-  // #swagger.tags = ['DocumentType']
+  // #swagger.tags = ['PropertyImage']
   /*
     #swagger.parameters['body'] = {
       in: 'body', 
       '@schema': { 
-        "required": ["name","icon","is_basic","is_active"], 
+        "required": ["property_id"], 
         "properties": { 
-          "name": { 
+          "property_id": { 
             "type": "string",
           },
           "icon": { 
             "type": "object",
             "description":"S3 Bucket object"
-          },
-          "is_basic": { 
-            "type": "boolean",
-            "defauly":true
-          },
-          "is_active": { 
-            "type": "boolean",
-            "defauly":true
-          },
+          }
         } 
       } 
     }
@@ -53,10 +45,9 @@ const create = async (req, res) => {
 }
 
 const list = async (req, res) => {
-  // #swagger.tags = ['DocumentType']
+  // #swagger.tags = ['PropertyImage']
   //  #swagger.parameters['page_size'] = {in: 'query',type:'number'}
   //  #swagger.parameters['page'] = {in: 'query',type:'number'}
-  
   try{
       let pageSize = 0;
       let skip = 0;
@@ -67,7 +58,6 @@ const list = async (req, res) => {
         }
       }
       let query={}
-      
       const noOfRecord = await ThisModel.find(query).countDocuments();
       const record     = await ThisModel.find(query).lean().sort({ createdAt: -1 }).skip(skip).limit(pageSize)
       let records = {noOfRecord:noOfRecord,results:record}
@@ -78,7 +68,7 @@ const list = async (req, res) => {
 }
 
 const view = async (req, res) => {
-  // #swagger.tags = ['DocumentType']
+  // #swagger.tags = ['PropertyImage']
   try{
     let records = await ThisModel.findOne({_id:req.params.id})
     return await Helper.SuccessValidation(req,res,records)
@@ -88,27 +78,19 @@ const view = async (req, res) => {
 }
 
 const update = async (req, res) => {
+  // #swagger.tags = ['PropertyImage']
   /*
     #swagger.parameters['body'] = {
       in: 'body', 
-      '@schema': { 
-        "required": ["name","icon","is_basic","is_active"], 
+      '@schema': {
         "properties": { 
-          "name": { 
+          "property_id": { 
             "type": "string",
           },
           "icon": { 
             "type": "object",
             "description":"S3 Bucket object"
-          },
-          "is_basic": { 
-            "type": "boolean",
-            "defauly":true
-          },
-          "is_active": { 
-            "type": "boolean",
-            "defauly":true
-          },
+          }
         } 
       } 
     }
@@ -132,7 +114,7 @@ const update = async (req, res) => {
 }
 
 const remove = async (req, res) => {
-  // #swagger.tags = ['DocumentType']
+  // #swagger.tags = ['PropertyImage']
   try{
     let record = await ThisModel.findByIdAndDelete({_id:req.params.id})
     return await Helper.SuccessValidation(req,res,record)
@@ -142,7 +124,7 @@ const remove = async (req, res) => {
 }
 
 const bulkremove = async (req, res) => {
-  // #swagger.tags = ['DocumentType']
+  // #swagger.tags = ['PropertyImage']
   //  #swagger.parameters['ids'] = { description: 'Enter multiple ids',type: 'array',required: true,}
   try{
     let record = await ThisModel.deleteMany({_id:req.params.ids})

@@ -43,7 +43,9 @@
             "in": "body",
             "schema": {
               "required": [
-                "phonenumber"
+                "phonenumber",
+                "role",
+                "first_name"
               ],
               "properties": {
                 "first_name": {
@@ -53,8 +55,8 @@
                   "type": "string"
                 },
                 "image": {
-                  "type": "string",
-                  "description": "S3 bucket url"
+                  "type": "object",
+                  "description": "S3 bucket object"
                 },
                 "email": {
                   "type": "string"
@@ -499,8 +501,8 @@
                   "type": "string"
                 },
                 "image": {
-                  "type": "string",
-                  "description": "S3 bucket url"
+                  "type": "object",
+                  "description": "S3 bucket object"
                 },
                 "email": {
                   "type": "string"
@@ -638,6 +640,10 @@
                 },
                 "title": {
                   "type": "string"
+                },
+                "icon": {
+                  "type": "object",
+                  "description": "S3 Bucket object"
                 },
                 "type": {
                   "type": "string",
@@ -891,6 +897,10 @@
                 "title": {
                   "type": "string"
                 },
+                "icon": {
+                  "type": "object",
+                  "description": "S3 Bucket object"
+                },
                 "type": {
                   "type": "string",
                   "enum": [
@@ -1060,6 +1070,167 @@
           {
             "name": "property_id",
             "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/PropertyImage/create": {
+      "post": {
+        "tags": [
+          "PropertyImage"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "required": [
+                "property_id"
+              ],
+              "properties": {
+                "property_id": {
+                  "type": "string"
+                },
+                "icon": {
+                  "type": "object",
+                  "description": "S3 Bucket object"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/PropertyImage/list": {
+      "get": {
+        "tags": [
+          "PropertyImage"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "type": "number"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "number"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/PropertyImage/view/{id}": {
+      "get": {
+        "tags": [
+          "PropertyImage"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/PropertyImage/update/{id}": {
+      "patch": {
+        "tags": [
+          "PropertyImage"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "property_id": {
+                  "type": "string"
+                },
+                "icon": {
+                  "type": "object",
+                  "description": "S3 Bucket object"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/PropertyImage/delete/{id}": {
+      "delete": {
+        "tags": [
+          "PropertyImage"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
             "type": "string"
           }
         ],

@@ -20,6 +20,10 @@ const create = async (req, res) => {
           "title": { 
             "type": "string",
           },
+          "icon": { 
+            "type": "object",
+            "description":"S3 Bucket object"
+          },
           "type": { 
             "type": "string",
             "enum": ["Appartment","Villa","IndividualHouse"],
@@ -193,6 +197,10 @@ const update = async (req, res) => {
           },
           "title": { 
             "type": "string",
+          },
+          "icon": { 
+            "type": "object",
+            "description":"S3 Bucket object"
           },
           "type": { 
             "type": "string",

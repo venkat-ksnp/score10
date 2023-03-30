@@ -9,7 +9,7 @@ const ModelSchema = new mongoose.Schema(
             default:null 
         },
         icon:{
-            type: String,
+            type: Object,
             default:null
         },
         is_active:{

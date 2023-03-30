@@ -30,7 +30,7 @@ const ModelSchema = new mongoose.Schema(
             default:null
         },
         image:{
-            type: String,
+            type: Object,
             default:null
         },
         role:{

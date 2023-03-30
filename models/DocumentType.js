@@ -10,7 +10,7 @@ const ModelSchema = new mongoose.Schema(
             unique:true,
         },
         icon:{
-            type: String,
+            type: Object,
             default:null
         },
         is_basic:{

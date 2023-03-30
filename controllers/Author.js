@@ -25,8 +25,8 @@ const create = async (req, res) => {
             "type": "string",
           },
           "image": { 
-            "type": "string",
-            "description":"S3 bucket url"
+            "type": "object",
+            "description":"S3 bucket object"
           },
           "email": { 
             "type": "string",
@@ -205,8 +205,8 @@ const update = async (req, res) => {
             "type": "string",
           },
           "image": { 
-            "type": "string",
-            "description":"S3 bucket url"
+            "type": "object",
+            "description":"S3 bucket object"
           },
           "email": { 
             "type": "string",
