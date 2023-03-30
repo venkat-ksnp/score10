@@ -16,7 +16,7 @@ const create = async (req, res) => {
     #swagger.parameters['body'] = {
       in: 'body', 
       '@schema': { 
-        "required": ["phonenumber"], 
+        "required": ["phonenumber","role","first_name"], 
         "properties": { 
           "first_name": { 
             "type": "string",

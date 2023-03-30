@@ -44,7 +44,7 @@ const ModelSchema = new mongoose.Schema(
         gender:{
             type: String,
             enum: ["Male", "Female", "Other"],
-            default:null
+            default:"Male"
         },
         password: {
             type: String,
