@@ -599,6 +599,27 @@
         }
       }
     },
+    "/Common/Upload": {
+      "post": {
+        "tags": [
+          "Common"
+        ],
+        "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "singleFile",
+            "in": "formData",
+            "type": "file",
+            "required": true,
+            "description": "Upload file..."
+          }
+        ],
+        "responses": {}
+      }
+    },
     "/Property/create": {
       "post": {
         "tags": [
@@ -639,6 +660,9 @@
                   "description": "Take _id from authors landlords role"
                 },
                 "title": {
+                  "type": "string"
+                },
+                "description": {
                   "type": "string"
                 },
                 "icon": {
@@ -895,6 +919,9 @@
                   "description": "Take _id from authors landlords role"
                 },
                 "title": {
+                  "type": "string"
+                },
+                "description": {
                   "type": "string"
                 },
                 "icon": {
@@ -1600,6 +1627,11 @@
             "name": "page",
             "in": "query",
             "type": "number"
+          },
+          {
+            "name": "landlord_id",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {

@@ -162,15 +162,24 @@ const list = async (req, res) => {
         }
       }
       let query={}
-      if(req.query.keyword){
-          query["role"] =  {
-            $or:[
-              {first_name: {$regex: req.query.keyword}},
-              {last_name: {$regex: req.query.keyword}},
-              {email: {$regex: req.query.email}},
-              {phonenumber: {$regex: req.query.phonenumber}}
-            ]
-          }
+      // if(req.query.keyword){
+      //     query["role"] =  {
+      //       $or:[
+      //         {first_name: {$regex: req.query.keyword}},
+      //         {last_name: {$regex: req.query.keyword}},
+      //         {email: {$regex: req.query.email}},
+      //         {phonenumber: {$regex: req.query.phonenumber}}
+      //       ]
+      //     }
+      // }
+      if(req.query.role){
+        query["role"] = {$eq:req.query.role}
+      }
+      if(req.query.email){
+        query["email"] = {$eq:req.query.email}
+      }
+      if(req.query.phonenumber){
+        query["phonenumber"] = {$eq:req.query.phonenumber}
       }
       const noOfRecord = await ThisModel.find(query).countDocuments();
       const record     = await ThisModel.find(query).lean().sort({ createdAt: -1 }).skip(skip).limit(pageSize)

@@ -20,6 +20,9 @@ const create = async (req, res) => {
           "title": { 
             "type": "string",
           },
+          "description": { 
+            "type": "string",
+          },
           "icon": { 
             "type": "object",
             "description":"S3 Bucket object"
@@ -196,6 +199,9 @@ const update = async (req, res) => {
             "description":"Take _id from authors landlords role"
           },
           "title": { 
+            "type": "string",
+          },
+          "description": { 
             "type": "string",
           },
           "icon": { 

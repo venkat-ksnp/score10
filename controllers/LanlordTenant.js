@@ -54,6 +54,7 @@ const list = async (req, res) => {
   // #swagger.tags = ['LanlordTenant']
   //  #swagger.parameters['page_size'] = {in: 'query',type:'number'}
   //  #swagger.parameters['page'] = {in: 'query',type:'number'}
+  //  #swagger.parameters['landlord_id'] = {in: 'query',type:'string'}
   
   try{
       let pageSize = 0;
@@ -65,7 +66,9 @@ const list = async (req, res) => {
         }
       }
       let query={}
-      
+      if(req.query.landlord_id){
+        query['landlord_id'] = {$eq:req.query.landlord_id}
+      }
       const noOfRecord = await ThisModel.find(query).countDocuments();
       const record     = await ThisModel.find(query).lean().sort({ createdAt: -1 }).skip(skip).limit(pageSize)
       let records = {noOfRecord:noOfRecord,results:record}

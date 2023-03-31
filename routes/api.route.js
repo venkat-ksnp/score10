@@ -1,7 +1,6 @@
 const expres                    =   require('express')
 const router                    =   expres.Router()
 const authorization             =   require('../middleware/authentication')
-
 const AuthorController          =  require('../controllers/Author.js')
 router.post("/Author/create",authorization, AuthorController.create)
 router.post("/Author/login",  AuthorController.login)
@@ -19,8 +18,9 @@ router.patch("/Author/update/:id",authorization,AuthorController.update)
 router.delete("/Author/delete/:id",authorization,AuthorController.remove)
 router.delete("/Author/bulkdelete/:ids",authorization,AuthorController.bulkremove)
 
-// const CommonController          =  require('../controllers/Common.js')
+const CommonController          =  require('../controllers/Common.js')
 // router.get("/Author/Dashboard",authorization,CommonController.Dashboard)
+router.post("/Common/Upload",CommonController.Upload)
 
 const PropertyController          =  require('../controllers/Property.js')
 router.post("/Property/create",authorization, PropertyController.create)
