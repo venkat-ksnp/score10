@@ -106,13 +106,22 @@ const view = async (req, res) => {
 
 const Verify = async (req, resp) => {
   //  #swagger.tags = ['TenantDocument']
-  //  #swagger.parameters['type'] = {in: 'query',required:true,enum: ["adhar", "pan", "driving_licence","voter_id","passport","electricity","court_case"]}
-  //  #swagger.parameters['dob'] = {in: 'query',description:"Required only for driving_licence,passport(dd/mm/yyyy)"}
-  //  #swagger.parameters['state'] = {in: 'query',description:"Required only for passport"}
-  //  #swagger.parameters['electricityProvider'] = {in: 'query',description:"This field is Mandatory for Electricity"}
-  //  #swagger.parameters['installationNumber'] = {in: 'query',description:"This field is Mandatory for West Bengal (WBSEDCL) Electricity"}
-  //  #swagger.parameters['MobileNumber'] = {in: 'query',description:"This field is Mandatory for Kerala (KSEB) Electricity"}
-
+  //  #swagger.parameters['type'] = {in: 'query',required:true,enum: ["adhar", "pan", "driving_licence","voter_id","passport","electricity","court_case","epfo_uan"]}
+  //  #swagger.parameters['dob'] = {in: 'query',description:"driving_licence  [Required],passport [Required DD/MM/YYYY FORMAT ONLY ]",required:false}
+  //  #swagger.parameters['number'] = {in: 'params',description:"epfo_uan(Enter UanNumber), passport(Enter FileNumber), adhar(Enter AdharNumber), pan(Enter PanNumber), court_case(Deafault Value As caseList), driving_licence(EnetrLicense Number), voter_id(Enter Voterid Number)",required:true}
+  //  #swagger.parameters['state'] = {in: 'query',description:"passport [Required]",required:false}
+  //  #swagger.parameters['electricityProvider'] = {in: 'query',description:"Electricity  [Required]",required:false}
+  //  #swagger.parameters['installationNumber'] = {in: 'query',description:"Electricity [Required] (For West Bengal (WBSEDCL) Only",required:false}
+  //  #swagger.parameters['MobileNumber'] = {in: 'query',description:"Electricity [Required] (ForKerala (KSEB)) Only",required:false}
+  //  #swagger.parameters['password'] = {in: 'query',description:"Epfo Uan [Required]",required:false}
+  //  #swagger.parameters['address'] = {in: 'query',description:"court_case [OPTIONAL]"}
+  //  #swagger.parameters['fatherName'] = {in: 'query',description:"court_case  [OPTIONAL]"}
+  //  #swagger.parameters['state'] = {in: 'query',description:"court_case [OPTIONAL]"}
+  //  #swagger.parameters['type'] = {in: 'query',description:"court_case  [Required]",enum:["individual","entity"],required:false}
+  //  #swagger.parameters['caseFilter'] = {in: 'query',description:"court_case  [OPTIONAL]",enum:["ipap","women safety","pmla","police","motor"]}
+  //  #swagger.parameters['caseCategory'] = {in: 'query',description:"court_case  [OPTIONAL]",enum:["criminal","civil"]}
+  //  #swagger.parameters['caseType'] = {in: 'query',description:"court_case [OPTIONAL]",enum:["petitioner","respondant"]}
+  //  #swagger.parameters['caseYear'] = {in: 'query',description:"court_case [OPTIONAL YYYY-YYYY  FORMAT ONLY ]"}
   try{
       let CurrentDate = await Helper.CurrentDate()
       let id_number = req.params.number
@@ -148,10 +157,14 @@ const Verify = async (req, resp) => {
                 respData = await Services.passportVerification(id_number,req.query.dob,res.data.userId, res.data.id)
               }else if (id_name == "electricity") {
                 respData = await Services.electricityVerification(id_number,req.query.electricityProvider,res.data.userId, res.data.id)
+              }else if (id_name == "court_case") {
+                respData = await Services.courtVerification(req.user.first_name,req.query,res.data.userId,res.data.id)
+              }else if (id_name == "epfo_uan") {
+                respData = await Services.epfoUanVerification(id_number,req.query.password,res.data.userId,res.data.id)
               }else{
-                respData = await Services.adharCardDetails(id_number, res.data.userId, res.data.id)
+                respData = await Services.adharCardDetails(id_number,res.data.userId, res.data.id)
               }
-              // console.log(respData)
+              console.log(respData)
               if(respData.status == 200){
                 let ExpairyDate = await Helper.ExpairyDate(CurrentDate)
                 await ThisModel.updateOne({_id:noOfRecord._id},{$set:{is_verified:true,expairy_date:ExpairyDate,verification_response:respData.final_response}})

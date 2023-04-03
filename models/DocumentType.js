@@ -19,7 +19,7 @@ const ModelSchema = new mongoose.Schema(
         },
         type:{
             type: String,
-            enum: ["adhar", "pan", "driving_licence","voter_id","passport","electricity","court_case"],
+            enum: ["adhar", "pan", "driving_licence","voter_id","passport","electricity","court_case","epfo_uan"],
             default:"adhar",
             unique:true,
             required:true

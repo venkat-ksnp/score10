@@ -344,4 +344,88 @@ const phoneNumberVerification = async (otp,mobileNumber,referenceId,userId,id) =
   });
 }
 
-module.exports = {drivingLicense,panCardDetails,passportVerification,voterIdDetails,phoneNumberGenerateOtp,phoneNumberVerification,adharCardDetails,electricityVerification}
+const courtVerification = async (name,respdata,userId,id) => {
+  let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
+  let essentials = {name: ''+name+'',type: ''+respdata.type+''}
+  if(respdata.address){essentials['address'] = respdata.address}
+  if(respdata.fatherName){essentials['fatherName'] = respdata.fatherName}
+  if(respdata.caseFilter){essentials['caseFilter'] = respdata.caseFilter}
+  if(respdata.caseCategory){essentials['caseCategory'] = respdata.caseCategory}
+  if(respdata.caseType){essentials['caseType'] = respdata.caseType}
+  if(respdata.caseYear){essentials['caseYear'] = respdata.caseYear}
+  var data = JSON.stringify({task: 'caseList',essentials: essentials});
+  var options = {
+    method: 'POST',
+    url: `http://${Signzy_Api_Url}/api/v2/patrons/${userId}/courtcases`,
+    headers: {
+      'Accept': '*/*',
+      'Accept-Language': 'en-US,en;q=0.8',
+      'Authorization': id,
+      'content-type': 'application/json'
+    },
+    data: data
+  };
+  return axios(options).then(function (responses){
+    if(responses.status == 200) {
+      return { status: 200, final_response:responses.data };
+    }else{
+      return { status: 400, final_response:responses.data };
+    }
+  }).catch(function (error){
+    try{
+      var error = error.response.data.error
+    } catch (err){
+      var error = error
+    }
+    return { status: 400, final_response:error};
+  });
+}
+
+const epfoUanVerification = async (uan,pwd,userId,id) => {
+  let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
+  var data = JSON.stringify({
+    task: 'uanDetailed',
+    essentials:{
+      uan:''+uan+'',
+      password:''+pwd+''
+    }
+  });
+  var options = {
+    method: 'POST',
+    url: `http://${Signzy_Api_Url}/api/v2/patrons/${userId}/epfos`,
+    headers: {
+      'Accept': '*/*',
+      'Accept-Language': 'en-US,en;q=0.8',
+      'Authorization': id,
+      'content-type': 'application/json'
+    },
+    data: data
+  };
+  return axios(options).then(function (responses){
+    if(responses.status == 200) {
+      return { status: 200, final_response:responses.data };
+    }else{
+      return { status: 400, final_response:responses.data };
+    }
+  }).catch(function (error){
+    try{
+      var error = error.response.data.error
+    } catch (err){
+      var error = error
+    }
+    return { status: 400, final_response:error};
+  });
+}
+
+module.exports = {
+  drivingLicense,
+  panCardDetails,
+  passportVerification,
+  voterIdDetails,
+  phoneNumberGenerateOtp,
+  phoneNumberVerification,
+  adharCardDetails,
+  electricityVerification,
+  courtVerification,
+  epfoUanVerification
+}

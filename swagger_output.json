@@ -1288,7 +1288,7 @@
         }
       }
     },
-    "/TenantDocument/verify/{id}/{number}": {
+    "/TenantDocument/verify/{id}": {
       "get": {
         "tags": [
           "TenantDocument"
@@ -1302,12 +1302,6 @@
             "type": "string"
           },
           {
-            "name": "number",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
             "name": "authorization",
             "in": "header",
             "type": "string"
@@ -1315,46 +1309,112 @@
           {
             "name": "type",
             "in": "query",
-            "required": true,
+            "required": false,
             "enum": [
-              "adhar",
-              "pan",
-              "driving_licence",
-              "voter_id",
-              "passport",
-              "electricity",
-              "court_case"
+              "individual",
+              "entity"
             ],
-            "type": "string"
+            "type": "string",
+            "description": "court_case [Required]"
           },
           {
             "name": "dob",
             "in": "query",
-            "description": "Required only for driving_licence,passport(dd/mm/yyyy)",
+            "description": "driving_licence [Required],passport [Required DD/MM/YYYY FORMAT ONLY ]",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "number",
+            "in": "params",
+            "description": "epfo_uan(Enter UanNumber), passport(Enter FileNumber), adhar(Enter AdharNumber), pan(Enter PanNumber), court_case(Deafault Value As caseList), driving_licence(EnetrLicense Number), voter_id(Enter Voterid Number)",
+            "required": true,
             "type": "string"
           },
           {
             "name": "state",
             "in": "query",
-            "description": "Required only for passport",
+            "description": "court_case [OPTIONAL]",
+            "required": false,
             "type": "string"
           },
           {
             "name": "electricityProvider",
             "in": "query",
-            "description": "This field is Mandatory for Electricity",
+            "description": "Electricity [Required]",
+            "required": false,
             "type": "string"
           },
           {
             "name": "installationNumber",
             "in": "query",
-            "description": "This field is Mandatory for West Bengal (WBSEDCL) Electricity",
+            "description": "Electricity [Required] (For West Bengal (WBSEDCL) Only",
+            "required": false,
             "type": "string"
           },
           {
             "name": "MobileNumber",
             "in": "query",
-            "description": "This field is Mandatory for Kerala (KSEB) Electricity",
+            "description": "Electricity [Required] (ForKerala (KSEB)) Only",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "Epfo Uan [Required]",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "address",
+            "in": "query",
+            "description": "court_case [OPTIONAL]",
+            "type": "string"
+          },
+          {
+            "name": "fatherName",
+            "in": "query",
+            "description": "court_case [OPTIONAL]",
+            "type": "string"
+          },
+          {
+            "name": "caseFilter",
+            "in": "query",
+            "description": "court_case [OPTIONAL]",
+            "enum": [
+              "ipap",
+              "women safety",
+              "pmla",
+              "police",
+              "motor"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "caseCategory",
+            "in": "query",
+            "description": "court_case [OPTIONAL]",
+            "enum": [
+              "criminal",
+              "civil"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "caseType",
+            "in": "query",
+            "description": "court_case [OPTIONAL]",
+            "enum": [
+              "petitioner",
+              "respondant"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "caseYear",
+            "in": "query",
+            "description": "court_case [OPTIONAL YYYY-YYYY FORMAT ONLY ]",
             "type": "string"
           }
         ],
