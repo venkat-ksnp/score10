@@ -73,6 +73,7 @@ const create = async (req, res) => {
             let CreateLanlordTenantModel = LanlordTenantModel()
             CreateLanlordTenantModel['tenant_id'] = doc._id
             CreateLanlordTenantModel['lanlord_id'] = req.user._id
+            CreateLanlordTenantModel['lanlord_id'] = req.user._id
             CreateLanlordTenantModel.save()
           }
           await Helper.SuccessValidation(req,res,doc,'Added successfully')

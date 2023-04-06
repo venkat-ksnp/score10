@@ -17,7 +17,7 @@ const ModelSchema = new mongoose.Schema(
         property_id:{
             type    : mongoose.Schema.Types.ObjectId,
             ref     : "Property",
-            default : false
+            default : null
         },
         landlord_status:{
             type: String,
