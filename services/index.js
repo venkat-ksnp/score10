@@ -16,6 +16,7 @@ const adharCardDetails = async (id_number, userId, id) => {
     },
     data: data
   };
+  // console.log(config)
   return axios(config).then(function (response) {
       if (response.status === 200) {
         return { status: 200, final_response: response.data };
@@ -31,7 +32,6 @@ const adharCardDetails = async (id_number, userId, id) => {
     return { status: 400, final_response:error};
   });
 }
-
 
 const panCardDetails = async (id_number, userId, id) => {
   let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
@@ -54,6 +54,7 @@ const panCardDetails = async (id_number, userId, id) => {
     },
     data: data
   };
+  // console.log(config)
   return await axios(config).then(function (response) {
       if (response.status === 200) {
         return { status: 200, final_response: response.data };
@@ -88,6 +89,7 @@ const voterIdDetails = async (id_number,state, userId, id) => {
     },
     data: data
   };
+  // console.log(config)
   return await axios(config).then(async function (response){
       if (response.status === 200) {
         return { status: 200, final_response: response.data };
@@ -145,6 +147,7 @@ const drivingLicense = async (id_number,dob,userId,id) => {
           },
           data: data
         };
+        // console.log(config)
         return axios(config).then(function (responses){
             if(responses.status == 200) {
               return { status: 200, final_response: responses.data };
@@ -207,6 +210,7 @@ const passportVerification = async (id_number,dob, userId, id) => {
           },
           data: data
         };
+        // console.log(config)
         return await axios(config).then(async function (responses) {
             if (responses.status == 200) {
               return { status: 200, final_response: responses.data };
@@ -251,6 +255,7 @@ const electricityVerification = async (id_number,electricityProvider, userId, id
     },
     data: data
   };
+  // console.log(options)
   return axios(config).then(function (responses) {
       if (responses.status == 200) {
         return { status: 200, final_response: responses.data };
@@ -288,6 +293,7 @@ const phoneNumberGenerateOtp = async (mobileNumber,userId,id) => {
     },
     data: data
   };
+  // console.log(options)
   return axios(options).then(function (responses){
     if(responses.status == 200) {
       return { status: 200, final_response:responses.data };
@@ -328,6 +334,7 @@ const phoneNumberVerification = async (otp,mobileNumber,referenceId,userId,id) =
     },
     data: data
   };
+  // console.log(options)
   return axios(options).then(function (responses){
     if(responses.status == 200) {
       return { status: 200, final_response:responses.data };
@@ -346,7 +353,7 @@ const phoneNumberVerification = async (otp,mobileNumber,referenceId,userId,id) =
 
 const courtVerification = async (name,respdata,userId,id) => {
   let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
-  let essentials = {name: ''+name+'',type: ''+respdata.type+''}
+  let essentials = {name: ''+name+'',type: ''+respdata.caseFor+''}
   if(respdata.address){essentials['address'] = respdata.address}
   if(respdata.fatherName){essentials['fatherName'] = respdata.fatherName}
   if(respdata.caseFilter){essentials['caseFilter'] = respdata.caseFilter}
@@ -365,6 +372,7 @@ const courtVerification = async (name,respdata,userId,id) => {
     },
     data: data
   };
+  console.log(options)
   return axios(options).then(function (responses){
     if(responses.status == 200) {
       return { status: 200, final_response:responses.data };
@@ -372,6 +380,7 @@ const courtVerification = async (name,respdata,userId,id) => {
       return { status: 400, final_response:responses.data };
     }
   }).catch(function (error){
+    // console.log(error.response.data)
     try{
       var error = error.response.data.error
     } catch (err){
@@ -401,6 +410,7 @@ const epfoUanVerification = async (uan,pwd,userId,id) => {
     },
     data: data
   };
+  // console.log(options)
   return axios(options).then(function (responses){
     if(responses.status == 200) {
       return { status: 200, final_response:responses.data };
@@ -408,11 +418,54 @@ const epfoUanVerification = async (uan,pwd,userId,id) => {
       return { status: 400, final_response:responses.data };
     }
   }).catch(function (error){
+    // console.log(error.response.data)
     try{
       var error = error.response.data.error
-    } catch (err){
-      var error = error
+    } catch (err1){
+      try{
+        var error = err1.response.data
+      } catch (err2){
+        try{
+          var error = err2.response.statusText
+        } catch (err3){
+          var error = err3
+        }
+      }
     }
+    return { status: 400, final_response:error};
+  });
+}
+
+const nameMatch = async (name1,name2,userId,id) => {
+  let Signzy_Api_Url  = await Helper.Signzy_Api_Url()
+  var data = JSON.stringify({
+    task: 'nameMatch',
+    essentials:{
+      nameBlock: {
+        name1: name1, 
+        name2: name2
+      }
+    }
+  });
+  var options = {
+    method: 'POST',
+    url: `http://${Signzy_Api_Url}/api/v2/patrons/${userId}/matchers`,
+    headers: {
+      'Accept': '*/*',
+      'Accept-Language': 'en-US,en;q=0.8',
+      'Authorization': id,
+      'content-type': 'application/json'
+    },
+    data: data
+  };
+  // console.log(options)
+  return axios(options).then(function (responses){
+    if(responses.status == 200) {
+      return { status: 200, final_response:responses.data };
+    }else{
+      return { status: 400, final_response:responses.data };
+    }
+  }).catch(function (error){
     return { status: 400, final_response:error};
   });
 }
@@ -427,5 +480,6 @@ module.exports = {
   adharCardDetails,
   electricityVerification,
   courtVerification,
-  epfoUanVerification
+  epfoUanVerification,
+  nameMatch,
 }

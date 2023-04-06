@@ -1309,13 +1309,18 @@
           {
             "name": "type",
             "in": "query",
-            "required": false,
+            "required": true,
             "enum": [
-              "individual",
-              "entity"
+              "adhar",
+              "pan",
+              "driving_licence",
+              "voter_id",
+              "passport",
+              "electricity",
+              "court_case",
+              "epfo_uan"
             ],
-            "type": "string",
-            "description": "court_case [Required]"
+            "type": "string"
           },
           {
             "name": "dob",
@@ -1326,7 +1331,7 @@
           },
           {
             "name": "number",
-            "in": "params",
+            "in": "query",
             "description": "epfo_uan(Enter UanNumber), passport(Enter FileNumber), adhar(Enter AdharNumber), pan(Enter PanNumber), court_case(Deafault Value As caseList), driving_licence(EnetrLicense Number), voter_id(Enter Voterid Number)",
             "required": true,
             "type": "string"
@@ -1376,6 +1381,17 @@
             "name": "fatherName",
             "in": "query",
             "description": "court_case [OPTIONAL]",
+            "type": "string"
+          },
+          {
+            "name": "caseFor",
+            "in": "query",
+            "description": "court_case [Required]",
+            "enum": [
+              "individual",
+              "entity"
+            ],
+            "required": false,
             "type": "string"
           },
           {

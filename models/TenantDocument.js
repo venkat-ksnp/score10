@@ -30,6 +30,10 @@ const ModelSchema = new mongoose.Schema(
             type:Date,
             default:null
         },
+        name_match_ratio:{
+            type:Number,
+            default:null
+        },
         api:{
             type: String,
             enum: ["signzy"],

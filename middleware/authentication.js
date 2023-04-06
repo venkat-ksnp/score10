@@ -6,8 +6,12 @@ const authenticationToken = (req, res , next) => {
         if(typeof Token !=='undefined'){
             jwt.verify(Token, 'abcdefg' ,(err, user) => {
                 if(!err){
-                    req.user = user.user;
-                    next();
+                    if(user.user){
+                        req.user = user.user;
+                        next();
+                    }else{
+                        res.status(401).send({ message:"Unauthorized" , err});
+                    }
                 }else{
                     res.status(401).send({ message:"Unauthorized" , err});
                 }

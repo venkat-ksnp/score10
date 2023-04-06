@@ -6,8 +6,8 @@ const Helper            =      require("../middleware/helper");
 const AuthorModel       =      mongoos.model('Author');
 const expres            =     require('express')
 const router            =     expres.Router()
-const fileUpload        =     require('express-fileupload');
-router.use(fileUpload());
+// const fileUpload        =     require('express-fileupload');
+// router.use(fileUpload());
 var path=require('path');
 const Dashboard = async (req, res) => {
   // #swagger.tags = ['Common']

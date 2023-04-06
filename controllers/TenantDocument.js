@@ -108,7 +108,7 @@ const Verify = async (req, resp) => {
   //  #swagger.tags = ['TenantDocument']
   //  #swagger.parameters['type'] = {in: 'query',required:true,enum: ["adhar", "pan", "driving_licence","voter_id","passport","electricity","court_case","epfo_uan"]}
   //  #swagger.parameters['dob'] = {in: 'query',description:"driving_licence  [Required],passport [Required DD/MM/YYYY FORMAT ONLY ]",required:false}
-  //  #swagger.parameters['number'] = {in: 'params',description:"epfo_uan(Enter UanNumber), passport(Enter FileNumber), adhar(Enter AdharNumber), pan(Enter PanNumber), court_case(Deafault Value As caseList), driving_licence(EnetrLicense Number), voter_id(Enter Voterid Number)",required:true}
+  //  #swagger.parameters['number'] = {in: 'query',description:"epfo_uan(Enter UanNumber), passport(Enter FileNumber), adhar(Enter AdharNumber), pan(Enter PanNumber), court_case(Deafault Value As caseList), driving_licence(EnetrLicense Number), voter_id(Enter Voterid Number)",required:true}
   //  #swagger.parameters['state'] = {in: 'query',description:"passport [Required]",required:false}
   //  #swagger.parameters['electricityProvider'] = {in: 'query',description:"Electricity  [Required]",required:false}
   //  #swagger.parameters['installationNumber'] = {in: 'query',description:"Electricity [Required] (For West Bengal (WBSEDCL) Only",required:false}
@@ -117,14 +117,14 @@ const Verify = async (req, resp) => {
   //  #swagger.parameters['address'] = {in: 'query',description:"court_case [OPTIONAL]"}
   //  #swagger.parameters['fatherName'] = {in: 'query',description:"court_case  [OPTIONAL]"}
   //  #swagger.parameters['state'] = {in: 'query',description:"court_case [OPTIONAL]"}
-  //  #swagger.parameters['type'] = {in: 'query',description:"court_case  [Required]",enum:["individual","entity"],required:false}
+  //  #swagger.parameters['caseFor'] = {in: 'query',description:"court_case  [Required]",enum:["individual","entity"],required:false}
   //  #swagger.parameters['caseFilter'] = {in: 'query',description:"court_case  [OPTIONAL]",enum:["ipap","women safety","pmla","police","motor"]}
   //  #swagger.parameters['caseCategory'] = {in: 'query',description:"court_case  [OPTIONAL]",enum:["criminal","civil"]}
   //  #swagger.parameters['caseType'] = {in: 'query',description:"court_case [OPTIONAL]",enum:["petitioner","respondant"]}
   //  #swagger.parameters['caseYear'] = {in: 'query',description:"court_case [OPTIONAL YYYY-YYYY  FORMAT ONLY ]"}
   try{
       let CurrentDate = await Helper.CurrentDate()
-      let id_number = req.params.number
+      let id_number = req.query.number
       let id_name   = req.query.type
       let DocTypeId = await DocumentTypeModel.findOne({type:id_name})
       let srh_query = {}
@@ -166,8 +166,21 @@ const Verify = async (req, resp) => {
               }
               console.log(respData)
               if(respData.status == 200){
+                let name = null
+                if(id_name == "court_case"){
+                  name = respData['result']['cases'][0]['name']
+                }else{
+                  if(id_name == "passport"){
+                    name = respData['response']['result']['name']
+                  }else if(id_name == "driving_licence"){
+                    name = respData['response']['result']['detailsOfDrivingLicence']['name']
+                  }else{
+                    name = respData['result']['name']
+                  }
+                }
+                let matchName = await Services.adharCardDetails(req.user.first_name,name)
                 let ExpairyDate = await Helper.ExpairyDate(CurrentDate)
-                await ThisModel.updateOne({_id:noOfRecord._id},{$set:{is_verified:true,expairy_date:ExpairyDate,verification_response:respData.final_response}})
+                await ThisModel.updateOne({_id:noOfRecord._id},{$set:{name_match_ratio:matchName,is_verified:true,expairy_date:ExpairyDate,verification_response:respData.final_response}})
                 return await Helper.SuccessValidation(req,resp,respData.final_response)
               }else{
                 await ThisModel.updateOne({_id:noOfRecord._id},{ $set:{verification_response:respData.final_response}})
