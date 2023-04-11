@@ -380,7 +380,7 @@ const courtVerification = async (name,respdata,userId,id) => {
       return { status: 400, final_response:responses.data };
     }
   }).catch(function (error){
-    // console.log(error.response.data)
+    console.log(error.response.data)
     try{
       var error = error.response.data.error
     } catch (err){
@@ -410,7 +410,7 @@ const epfoUanVerification = async (uan,pwd,userId,id) => {
     },
     data: data
   };
-  // console.log(options)
+  console.log(options)
   return axios(options).then(function (responses){
     if(responses.status == 200) {
       return { status: 200, final_response:responses.data };
@@ -418,7 +418,7 @@ const epfoUanVerification = async (uan,pwd,userId,id) => {
       return { status: 400, final_response:responses.data };
     }
   }).catch(function (error){
-    // console.log(error.response.data)
+    console.log(error.response.data)
     try{
       var error = error.response.data.error
     } catch (err1){
